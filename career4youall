@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Find job vacancies and government exam opportunities for students and job seekers.">
+  <title>CareerPath — Jobs & Exam Opportunities</title>
+
+  <style>
+    :root {
+      --ink: #17202b;
+      --muted: #687382;
+      --brand: #315bea;
+      --brand-dark: #2448c8;
+      --paper: #f5f7fb;
+      --line: #e4e8ef;
+      --green: #16794b;
+      --white: #fff;
+      --shadow: 0 12px 35px rgba(24, 39, 75, .08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button, input, select { font: inherit; }
+
+    .container {
+      width: min(1120px, calc(100% - 36px));
+      margin-inline: auto;
+    }
+
+    header {
+      background: var(--white);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .nav {
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .logo {
+      color: var(--brand);
+      font-size: 1.3rem;
+      font-weight: 850;
+      letter-spacing: -.04em;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      color: var(--muted);
+      font-size: .94rem;
+    }
+
+    .nav-links a:hover { color: var(--brand); }
+
+    .hero {
+      padding: 68px 0 48px;
+      color: white;
+      background:
+        radial-gradient(circle at 85% 20%, rgba(137, 167, 255, .55), transparent 28%),
+        linear-gradient(120deg, #172d75, #315bea 70%, #5275f1);
+    }
+
+    .hero-content { max-width: 750px; }
+
+    .eyebrow {
+      display: inline-block;
+      margin-bottom: 14px;
+      padding: 6px 11px;
+      border: 1px solid rgba(255,255,255,.32);
+      border-radius: 999px;
+      background: rgba(255,255,255,.1);
+      font-size: .8rem;
+      font-weight: 700;
+    }
+
+    h1 {
+      max-width: 700px;
+      margin: 0;
+      font-size: clamp(2.2rem, 6vw, 4rem);
+      line-height: 1.06;
+      letter-spacing: -.055em;
+    }
+
+    .hero p {
+      max-width: 600px;
+      margin: 18px 0 26px;
+      color: rgba(255,255,255,.85);
+      font-size: 1.08rem;
+    }
+
+    .search-box {
+      display: flex;
+      gap: 10px;
+      max-width: 680px;
+      padding: 8px;
+      border-radius: 14px;
+      background: white;
+      box-shadow: var(--shadow);
+    }
+
+    .search-box input {
+      flex: 1;
+      min-width: 0;
+      border: 0;
+      outline: 0;
+      padding: 10px 12px;
+      color: var(--ink);
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: 0;
+      border-radius: 10px;
+      padding: 11px 17px;
+      color: white;
+      background: var(--brand);
+      font-weight: 750;
+      cursor: pointer;
+      transition: background .15s, transform .15s;
+    }
+
+    .button:hover {
+      background: var(--brand-dark);
+      transform: translateY(-1px);
+    }
+
+    .search-box .button { white-space: nowrap; }
+
+    main { padding: 36px 0 64px; }
+
+    .section-heading {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .section-heading h2 {
+      margin: 0;
+      font-size: 1.65rem;
+      letter-spacing: -.04em;
+    }
+
+    .section-heading p {
+      margin: 5px 0 0;
+      color: var(--muted);
+    }
+
+    .filter-panel {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr auto;
+      gap: 12px;
+      margin-bottom: 22px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--white);
+    }
+
+    .filter-panel label {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: .78rem;
+      font-weight: 750;
+    }
+
+    .filter-panel select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      color: var(--ink);
+      background: white;
+    }
+
+    .filter-panel .button {
+      align-self: end;
+      min-height: 42px;
+    }
+
+    .results-note {
+      margin: 0 0 13px;
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    .job-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .job-card {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 22px;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: var(--white);
+      box-shadow: 0 3px 12px rgba(24,39,75,.025);
+      transition: box-shadow .15s, transform .15s;
+    }
+
+    .job-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    .job-topline {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 8px;
+    }
+
+    .category {
+      padding: 4px 9px;
+      border-radius: 999px;
+      color: #2d4ebd;
+      background: #edf1ff;
+      font-size: .75rem;
+      font-weight: 750;
+    }
+
+    .new-badge {
+      color: var(--green);
+      font-size: .75rem;
+      font-weight: 750;
+    }
+
+    .job-card h3 {
+      margin: 0;
+      font-size: 1.17rem;
+      letter-spacing: -.025em;
+    }
+
+    .organization {
+      margin: 3px 0 13px;
+      color: var(--muted);
+      font-size: .92rem;
+    }
+
+    .details {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 18px;
+      color: #4e5968;
+      font-size: .87rem;
+    }
+
+    .job-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: end;
+      justify-content: space-between;
+      gap: 14px;
+      min-width: 142px;
+    }
+
+    .deadline {
+      color: var(--muted);
+      text-align: right;
+      font-size: .82rem;
+    }
+
+    .deadline strong {
+      display: block;
+      color: var(--ink);
+      font-size: .9rem;
+    }
+
+    .apply-link { white-space: nowrap; }
+
+    .empty-state {
+      padding: 45px 20px;
+      border: 1px dashed #c9d1df;
+      border-radius: 14px;
+      color: var(--muted);
+      text-align: center;
+      background: white;
+    }
+
+    .empty-state strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--ink);
+      font-size: 1.1rem;
+    }
+
+    .notice {
+      margin-top: 25px;
+      padding: 15px 17px;
+      border-left: 4px solid #e3aa35;
+      border-radius: 8px;
+      color: #614b1d;
+      background: #fff8e9;
+      font-size: .88rem;
+    }
+
+    footer {
+      padding: 25px 0;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      background: white;
+      text-align: center;
+      font-size: .85rem;
+    }
+
+    @media (max-width: 700px) {
+      .nav { min-height: 62px; }
+      .nav-links { gap: 12px; font-size: .85rem; }
+      .hero { padding: 48px 0 38px; }
+      .filter-panel { grid-template-columns: 1fr 1fr; }
+      .filter-panel .button { grid-column: 1 / -1; }
+      .job-card { grid-template-columns: 1fr; }
+      .job-actions {
+        flex-direction: row;
+        align-items: center;
+        min-width: 0;
+      }
+      .deadline { text-align: left; }
+    }
+
+    @media (max-width: 440px) {
+      .container { width: min(100% - 24px, 1120px); }
+      .nav-links a:nth-child(2) { display: none; }
+      .search-box { flex-direction: column; }
+      .search-box .button { width: 100%; }
+      .filter-panel { grid-template-columns: 1fr; }
+      .filter-panel .button { grid-column: auto; }
+      .job-card { padding: 17px; }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="container nav">
+      <a class="logo" href="#" aria-label="CareerPath home">CareerPath</a>
+      <nav class="nav-links" aria-label="Main navigation">
+        <a href="#jobs">Find opportunities</a>
+        <a href="#about">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container hero-content">
+      <span class="eyebrow">Your next opportunity starts here</span>
+      <h1>Jobs and exam opportunities, all in one place.</h1>
+      <p>Explore vacancies, internships, and recruitment notices that fit your education and exam preparation journey.</p>
+
+      <form class="search-box" id="searchForm">
+        <input id="searchInput" type="search" placeholder="Search job title, organization, or exam…" aria-label="Search vacancies">
+        <button class="button" type="submit">Search opportunities</button>
+      </form>
+    </div>
+  </section>
+
+  <main class="container" id="jobs">
+    <div class="section-heading">
+      <div>
+        <h2>Latest opportunities</h2>
+        <p>Browse current openings and recruitment notices.</p>
+      </div>
+    </div>
+
+    <section class="filter-panel" aria-label="Filter opportunities">
+      <label>
+        Exam category
+        <select id="examFilter">
+          <option value="">All categories</option>
+          <option value="upsc">UPSC</option>
+          <option value="ssc">SSC</option>
+          <option value="banking">Banking</option>
+          <option value="railway">Railway</option>
+          <option value="state">State exams</option>
+          <option value="internship">Internships</option>
+        </select>
+      </label>
+
+      <label>
+        Education
+        <select id="educationFilter">
+          <option value="">Any qualification</option>
+          <option value="12th pass">12th pass</option>
+          <option value="graduate">Graduate</option>
+          <option value="postgraduate">Postgraduate</option>
+          <option value="student">Currently studying</option>
+        </select>
+      </label>
+
+      <label>
+        Sort by
+        <select id="sortSelect">
+          <option value="newest">Recently added</option>
+          <option value="deadline">Closing date</option>
+        </select>
+      </label>
+
+      <button class="button" id="resetButton" type="button">Reset filters</button>
+    </section>
+
+    <p class="results-note" id="resultsNote" aria-live="polite"></p>
+    <section class="job-list" id="jobList" aria-label="Vacancy listings"></section>
+
+    <aside class="notice">
+      <strong>Reminder:</strong> Always confirm eligibility, dates, fees, and application details on the official recruitment website before applying.
+    </aside>
+  </main>
+
+  <section class="container" id="about" style="padding-bottom: 32px;">
+    <h2>About CareerPath</h2>
+    <p style="color: var(--muted); max-width: 760px;">
+      CareerPath helps students and job seekers discover recruitment notices and opportunities while preparing for competitive exams.
+      Listings on this demo page are examples; replace them with verified, up-to-date information.
+    </p>
+  </section>
+
+  <footer>
+    <div class="container">© <span id="year"></span> CareerPath. Check official websites for the latest information.</div>
+  </footer>
+
+  <script>
+    // Replace these sample entries with verified vacancies and official links.
+    const opportunities = [
+      {
+        title: "Civil Services Examination — Recruitment Notice",
+        organization: "Union Public Service Commission",
+        category: "upsc",
+        categoryLabel: "UPSC",
+        education: "graduate",
+        location: "All India",
+        type: "Government exam",
+        deadline: "2026-12-15",
+        added: "2026-11-10",
+        link: "https://upsc.gov.in/"
+      },
+      {
+        title: "Combined Graduate Level Examination",
+        organization: "Staff Selection Commission",
+        category: "ssc",
+        categoryLabel: "SSC",
+        education: "graduate",
+        location: "All India",
+        type: "Government exam",
+        deadline: "2026-12-20",
+        added: "2026-11-08",
+        link: "https://ssc.gov.in/"
+      },
+      {
+        title: "Probationary Officer Recruitment",
+        organization: "Example National Bank",
+        category: "banking",
+        categoryLabel: "Banking",
+        education: "graduate",
+        location: "Multiple locations",
+        type: "Full-time",
+        deadline: "2026-12-10",
+        added: "2026-11-06",
+        link: "https://www.ibps.in/"
+      },
+      {
+        title: "Apprentice Training Opportunity",
+        organization: "Example Rail Recruitment Board",
+        category: "railway",
+        categoryLabel: "Railway",
+        education: "12th pass",
+        location: "Multiple locations",
+        type: "Apprenticeship",
+        deadline: "2026-12-05",
+        added: "2026-11-04",
+        link: "https://indianrailways.gov.in/"
+      },
+      {
+        title: "Student Research and Policy Internship",
+        organization: "Example Public Policy Institute",
+        category: "internship",
+        categoryLabel: "Internship",
+        education: "student",
+        location: "Remote",
+        type: "Internship",
+        deadline: "2026-12-01",
+        added: "2026-11-02",
+        link: "https://www.ncs.gov.in/"
+      }
+    ];
+
+    const jobList = document.getElementById("jobList");
+    const searchInput = document.getElementById("searchInput");
+    const examFilter = document.getElementById("examFilter");
+    const educationFilter = document.getElementById("educationFilter");
+    const sortSelect = document.getElementById("sortSelect");
+    const resultsNote = document.getElementById("resultsNote");
+
+    function formatDate(dateString) {
+      return new Date(dateString + "T00:00:00").toLocaleDateString("en-IN", {
+        day: "numeric",
+        month: "short",
+        year: "numeric"
+      });
+    }
+
+    function renderOpportunities() {
+      const query = searchInput.value.trim().toLowerCase();
+      const category = examFilter.value;
+      const education = educationFilter.value;
+
+      let filtered = opportunities.filter((job) => {
+        const searchableText = [
+          job.title, job.organization, job.categoryLabel,
+          job.location, job.type, job.education
+        ].join(" ").toLowerCase();
+
+        return searchableText.includes(query)
+          && (!category || job.category === category)
+          && (!education || job.education === education);
+      });
+
+      if (sortSelect.value === "deadline") {
+        filtered.sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
+      } else {
+        filtered.sort((a, b) => new Date(b.added) - new Date(a.added));
+      }
+
+      resultsNote.textContent = `${filtered.length} opportunit${filtered.length === 1 ? "y" : "ies"} found`;
+
+      if (filtered.length === 0) {
+        jobList.innerHTML = `
+          <div class="empty-state">
+            <strong>No matching opportunities</strong>
+            Try a different search or reset your filters.
+          </div>`;
+        return;
+      }
+
+      jobList.innerHTML = filtered.map((job) => `
+        <article class="job-card">
+          <div>
+            <div class="job-topline">
+              <span class="category">${job.categoryLabel}</span>
+              <span class="new-badge">● Open listing</span>
+            </div>
+            <h3>${job.title}</h3>
+            <p class="organization">${job.organization}</p>
+            <div class="details">
+              <span>📍 ${job.location}</span>
+              <span>🎓 ${job.education}</span>
+              <span>💼 ${job.type}</span>
+            </div>
+          </div>
+          <div class="job-actions">
+            <div class="deadline">Application deadline<strong>${formatDate(job.deadline)}</strong></div>
+            <a class="button apply-link" href="${job.link}" target="_blank" rel="noopener noreferrer">
+              Official site ↗
+            </a>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    document.getElementById("searchForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      renderOpportunities();
+    });
+
+    searchInput.addEventListener("input", renderOpportunities);
+    examFilter.addEventListener("change", renderOpportunities);
+    educationFilter.addEventListener("change", renderOpportunities);
+    sortSelect.addEventListener("change", renderOpportunities);
+
+    document.getElementById("resetButton").addEventListener("click", () => {
+      searchInput.value = "";
+      examFilter.value = "";
+      educationFilter.value = "";
+      sortSelect.value = "newest";
+      renderOpportunities();
+    });
+
+    document.getElementById("year").textContent = new Date().getFullYear();
+    renderOpportunities();
+  </script>
+</body>
+</html>
